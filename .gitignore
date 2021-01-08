@@ -1,0 +1,10 @@
+*~
+*.pyc
+__pycache__
+
+/backend/.venv/
+
+/frontend/node_modules/
+/frontend/package-lock.json
+/frontend/dist/
+/frontend/.env.local
