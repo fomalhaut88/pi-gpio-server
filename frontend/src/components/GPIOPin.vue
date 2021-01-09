@@ -58,6 +58,7 @@
 
 <script>
   const GPIO_PIN_TIMEOUT = parseInt(process.env.VUE_APP_GPIO_PIN_TIMEOUT)
+  const RESERVED_PINS = [1, 2, 4, 6, 9, 14, 17, 20, 25, 27, 28, 30, 34, 39]
 
   export default {
     name: "GPIOPin",
@@ -120,11 +121,13 @@
       },
     },
     mounted() {
-      this.pinsResource.get({id: this.num}).then(response => {
-        this.direction = response.data.direction
-        this.value = response.data.value
-        this.performValueInterval()
-      })
+      if (!RESERVED_PINS.includes(this.num)) {
+        this.pinsResource.get({id: this.num}).then(response => {
+          this.direction = response.data.direction
+          this.value = response.data.value
+          this.performValueInterval()
+        })
+      }
     },
   }
 </script>
