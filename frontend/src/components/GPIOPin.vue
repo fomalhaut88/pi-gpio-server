@@ -87,6 +87,9 @@
       direction: function(value) {
         this.pinsResource.save({id: this.num}, { direction: value }).then(() => {
           this.performValueInterval()
+          if (value == 'out') {
+            this.value = 0
+          }
         })
       },
       value: function(value) {
