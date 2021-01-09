@@ -47,7 +47,7 @@ def set_pin_direction(pin, direction):
     if direction == 'in':
         GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
     elif direction == 'out':
-        GPIO.setup(pin, GPIO.OUT)
+        GPIO.setup(pin, GPIO.OUT, initial=0)
     else:
         raise ValueError(f"Invalid direction: {direction}")
     DIRECTIONS[pin] = direction
