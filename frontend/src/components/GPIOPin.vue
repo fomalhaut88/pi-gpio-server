@@ -99,7 +99,7 @@
     },
     methods: {
       editModalOpen() {
-        if (this.name.substring(0, 4) == 'GPIO') {
+        if (!RESERVED_PINS.includes(this.num)) {
           this.isEditModal = true
         }
       },
