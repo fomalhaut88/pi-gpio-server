@@ -3,6 +3,7 @@ from flask_cors import CORS
 import RPi.GPIO as GPIO
 
 
+RESERVED_PINS = [1, 2, 4, 6, 9, 14, 17, 20, 25, 27, 28, 30, 34, 39]
 GPIO.setmode(GPIO.BOARD)
 DIRECTIONS = {}
 
@@ -13,6 +14,9 @@ CORS(app)
 
 @app.route('/pins/<int:pin>', methods=["GET", "POST"])
 def pins(pin):
+    if pin in RESERVED_PINS:
+        return "Reserved pin", 403
+
     if request.method == "GET":
         value = GPIO.input(pin)
         direction = DIRECTIONS[pin]
@@ -24,9 +28,7 @@ def pins(pin):
 
         if direction is not None:
             if direction != DIRECTIONS[pin]:
-                gpio_direction = getattr(GPIO, direction.upper())
-                GPIO.seput(pin, gpio_direction)
-                DIRECTIONS[pin] = direction
+                set_pin_direction(pin, direction)
 
         if value is not None:
             if DIRECTIONS[pin] == 'out':
@@ -36,13 +38,23 @@ def pins(pin):
 
 
 def configure_gpio(direction):
-    global DIRECTIONS
     for pin in range(1, 41):
-        gpio_direction = getattr(GPIO, direction.upper())
-        GPIO.seput(pin, gpio_direction)
-        DIRECTIONS[pin] = direction
+        if pin not in RESERVED_PINS:
+            set_pin_direction(pin, direction)
+
+
+def set_pin_direction(pin, direction):
+    if direction == 'in':
+        GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+    elif direction == 'out':
+        GPIO.setup(pin, GPIO.OUT)
+    else:
+        raise ValueError(f"Invalid direction: {direction}")
+    DIRECTIONS[pin] = direction
+
+
+configure_gpio('out')
 
 
 if __name__ == "__main__":
-    configure_gpio('out')
     app.run()
